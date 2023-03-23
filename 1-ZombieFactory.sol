@@ -8,10 +8,13 @@ event NewZombie(uint zombieId, string name, uint dna); // let the front-end know
     // this will be permanently stored in the blockchain
     uint dnaDigits = 16; // zombie's dna is determinated by a 16 digit number
     uint dnaModulus = 10 ** dnaDigits; // make sure the dna has ONLY 16 characters
+    uint cooldownTime = 1 days; // make zombies wait 1 day before attackig or feeding to attack again
     
     struct Zombie {
         string name;
         uint dna;
+        uint32 level;
+        uint32 readyTime; // this will be used to implement a cooldown timer
     }
     
     Zombie[] public zombies; // stores an army of zombies
@@ -20,7 +23,7 @@ event NewZombie(uint zombieId, string name, uint dna); // let the front-end know
     mapping (address => uint) ownerZombieCount; // keeps track of how many zombies an owner has
     
     function _createZombie(string memory _name, uint _dna) internal { // private function names start with an underscore (_)
-    uint id = zombies.push(Zombie(_name, _dna)) - 1; // adds the new zombie to the zombies array
+    uint id = zombies.push(Zombie(_name, _dna, 1, uint32(now + cooldownTime))) - 1; // adds the new zombie to the zombies array
     zombieToOwner[id] = msg.sender; // assign ownership to whoever called the function
     ownerZombieCount[msg.sender]++;
     emit NewZombie(id, _name, _dna);
