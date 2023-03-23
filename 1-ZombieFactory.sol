@@ -15,9 +15,14 @@ event NewZombie(uint zombieId, string name, uint dna); // let the front-end know
     
     Zombie[] public zombies; // stores an army of zombies
     
+    mapping (uint => address) public zombieToOwner; //keeps track of the address that owns a zombie
+    mapping (address => uint) ownerZombieCount; // keeps track of how many zombies an owner has
+    
     function _createZombie(string memory _name, uint _dna) private { // private function names start with an underscore (_)
     uint id = zombies.push(Zombie(_name, _dna)) - 1; // adds the new zombie to the zombies array
-        emit NewZombie(id, _name, _dna);
+    zombieToOwner[id] = msg.sender; // assign ownership to whoever called the function
+    ownerZombieCount[msg.sender]++;
+    emit NewZombie(id, _name, _dna);
     }
     
     function _generateRandomDna(string memory _str) private view returns (uint) { //views some f the contract's variabes but don't modify them
@@ -26,6 +31,7 @@ event NewZombie(uint zombieId, string name, uint dna); // let the front-end know
     }
     
     function createRandomZombie(string memory _name) public { // takes the zombie's name and use it to create a zombie with random dna
+        require(ownerZombieCount[msg.sender] == 0); // make sure the function only gets executed once per user
         uint randDna = _generateRandomDna(_name);
         _createZombie(_name, randDna);
     }
