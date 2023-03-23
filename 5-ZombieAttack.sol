@@ -16,5 +16,15 @@ contract ZombieAttack is ZombieHelper {
     Zombie storage myZombie = zombies[_zombieId];
     Zombie storage enemyZombie = zombies[_targetId];
     uint rand = randMod(100); // determine the outcome of the battle
+    if (rand <= attackVictoryProbability) {
+      myZombie.winCount++;
+      myZombie.level++; // level up!
+      enemyZombie.lossCount++; // loser!
+      feedAndMultiply(_zombieId, enemyZombie.dna, "zombie");
+    }else {
+      myZombie.lossCount++;
+      enemyZombie.winCount++;
+      _triggerCooldown(myZombie); // cooldown will be triggered whether the zombie wins or loses
+    }
   }
 }  
