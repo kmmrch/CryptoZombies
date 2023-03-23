@@ -4,7 +4,7 @@ import "./zombiefactory.sol";
 
 contract KittyInterface {
   function getKitty(uint256 _id) external view returns (
-     bool isGestating,
+    bool isGestating,
     bool isReady,
     uint256 cooldownIndex,
     uint256 nextActionAt,
@@ -19,8 +19,11 @@ contract KittyInterface {
 
 contract ZombieFeeding is ZombieFactory {
 
-address ckAddress = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;
-  KittyInterface kittyContract = KittyInterface(ckAddress); // set up the contract to read from CryptoKitties smart contract
+KittyInterface kittyContract; // changed this line to just declare a variable
+
+function setKittyContractAddress(address _address) external {
+    kittyContract = KittyInterface(_address);
+  }
 
 function feedAndMultiply(uint _zombieId, uint _targetDna, string memoy _species) public {
     require(msg.sender == zombieToOwner[_zombieId]); // verify if msg.sender is the zombie's owner
