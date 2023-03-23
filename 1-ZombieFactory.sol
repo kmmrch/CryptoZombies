@@ -15,6 +15,8 @@ event NewZombie(uint zombieId, string name, uint dna); // let the front-end know
         uint dna;
         uint32 level;
         uint32 readyTime; // this will be used to implement a cooldown timer
+        uint16 winCount;
+        uint16 lossCount;
     }
     
     Zombie[] public zombies; // stores an army of zombies
@@ -23,7 +25,7 @@ event NewZombie(uint zombieId, string name, uint dna); // let the front-end know
     mapping (address => uint) ownerZombieCount; // keeps track of how many zombies an owner has
     
     function _createZombie(string memory _name, uint _dna) internal { // private function names start with an underscore (_)
-    uint id = zombies.push(Zombie(_name, _dna, 1, uint32(now + cooldownTime))) - 1; // adds the new zombie to the zombies array
+    uint id = zombies.push(Zombie(_name, _dna, 1, uint32(now + cooldownTime), 0, 0)) - 1; // adds the new zombie to the zombies array with 0 wins and 0 losses
     zombieToOwner[id] = msg.sender; // assign ownership to whoever called the function
     ownerZombieCount[msg.sender]++;
     emit NewZombie(id, _name, _dna);
