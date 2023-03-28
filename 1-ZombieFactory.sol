@@ -6,6 +6,8 @@ import "./safemath.sol";
 contract ZombieFactory is Ownable {
 
 using SafeMath for uint256;
+using SafeMath32 for uint32;
+using SafeMath16 for uint16;
 
 event NewZombie(uint zombieId, string name, uint dna); // let the front-end know every time a new zombie is created
 
@@ -31,7 +33,7 @@ event NewZombie(uint zombieId, string name, uint dna); // let the front-end know
     function _createZombie(string memory _name, uint _dna) internal { // private function names start with an underscore (_)
     uint id = zombies.push(Zombie(_name, _dna, 1, uint32(now + cooldownTime), 0, 0)) - 1; // adds the new zombie to the zombies array with 0 wins and 0 losses
     zombieToOwner[id] = msg.sender; // assign ownership to whoever called the function
-    ownerZombieCount[msg.sender]++;
+    ownerZombieCount[msg.sender] = ownerZombieCount[msg.sender].add(1);
     emit NewZombie(id, _name, _dna);
     }
     
