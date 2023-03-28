@@ -5,6 +5,8 @@ import "./erc721.sol";
 
 contract ZombieOwnership is ZombieAttack, ERC721 {
 
+mapping (uint => address) zombieApprovals; // quickly look up if someone is approved to take a token
+
 function balanceOf(address _owner) external view returns (uint256) {
     return ownerZombieCount[_owner]; // return the number of zombies the user has here
   }
@@ -21,10 +23,12 @@ function balanceOf(address _owner) external view returns (uint256) {
   }
 
   function transferFrom(address _from, address _to, uint256 _tokenId) external payable {
-
+    require (zombieToOwner[_tokenId] == msg.sender || zombieApprovals[_tokenId] == msg.sender);
+    _transfer(_from, _to, _tokenId); //only the owner or approved addres of a token/zombie can transfer it
   }
 
-  function approve(address _approved, uint256 _tokenId) external payable {
-
+  function approve(address _approved, uint256 _tokenId) external payable onlyOwnerOf(_tokenId) { // only the owner of the token can give someone approval to take it
+    zombieApprovals[_tokenId] = _approved;
+    emit Approval(msg.sender, _approved, _tokenId);
   }
 }
